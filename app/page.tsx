@@ -386,9 +386,7 @@ function App() {
             ))}
           </div>
           <blockquote className="text-2xl md:text-3xl text-white font-medium mb-8">
-            "We were drowning in spreadsheets and paper forms. CityFlow gave us
-            back hours every week and our residents actually thank us for the
-            transparency."
+            "insert testimonial here..."
           </blockquote>
           <div className="text-blue-100">
             <p className="font-semibold">Mike Johnson</p>
