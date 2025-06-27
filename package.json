@@ -13,6 +13,7 @@
     "@types/react": "18.2.22",
     "@types/react-dom": "18.2.7",
     "autoprefixer": "10.4.15",
+    "better-auth": "^1.2.10",
     "dotenv": "^16.6.0",
     "drizzle-orm": "^0.44.2",
     "eslint": "8.49.0",
