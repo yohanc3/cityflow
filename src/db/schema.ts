@@ -13,10 +13,10 @@ import {
 export const account = pgTable(
   "account",
   {
-    id: text().primaryKey().notNull(),
+    id: uuid("id").primaryKey().defaultRandom().notNull(),
     accountId: text("account_id").notNull(),
     providerId: text("provider_id").notNull(),
-    userId: text("user_id").notNull(),
+    userId: uuid("user_id").notNull(),
     accessToken: text("access_token"),
     refreshToken: text("refresh_token"),
     idToken: text("id_token"),
@@ -28,8 +28,8 @@ export const account = pgTable(
     }),
     scope: text(),
     password: text(),
-    createdAt: timestamp("created_at", { mode: "string" }).notNull(),
-    updatedAt: timestamp("updated_at", { mode: "string" }).notNull(),
+    createdAt: timestamp("created_at").notNull(),
+    updatedAt: timestamp("updated_at").notNull(),
   },
   (table) => [
     foreignKey({
@@ -43,14 +43,14 @@ export const account = pgTable(
 export const session = pgTable(
   "session",
   {
-    id: text().primaryKey().notNull(),
-    expiresAt: timestamp("expires_at", { mode: "string" }).notNull(),
+    id: uuid("id").primaryKey().defaultRandom().notNull(),
+    expiresAt: timestamp("expires_at").notNull(),
     token: text().notNull(),
-    createdAt: timestamp("created_at", { mode: "string" }).notNull(),
-    updatedAt: timestamp("updated_at", { mode: "string" }).notNull(),
+    createdAt: timestamp("created_at").notNull(),
+    updatedAt: timestamp("updated_at").notNull(),
     ipAddress: text("ip_address"),
     userAgent: text("user_agent"),
-    userId: text("user_id").notNull(),
+    userId: uuid("user_id").notNull(),
   },
   (table) => [
     foreignKey({
@@ -66,21 +66,24 @@ export const verification = pgTable("verification", {
   id: text().primaryKey().notNull(),
   identifier: text().notNull(),
   value: text().notNull(),
-  expiresAt: timestamp("expires_at", { mode: "string" }).notNull(),
-  createdAt: timestamp("created_at", { mode: "string" }),
-  updatedAt: timestamp("updated_at", { mode: "string" }),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at"),
+  updatedAt: timestamp("updated_at"),
 });
 
 export const user = pgTable(
   "user",
   {
-    id: text().primaryKey().notNull(),
+    id: uuid("id").primaryKey().defaultRandom().notNull(),
     name: text().notNull(),
     email: text().notNull(),
     emailVerified: boolean("email_verified").notNull(),
-    image: text(),
-    createdAt: timestamp("created_at", { mode: "string" }).notNull(),
-    updatedAt: timestamp("updated_at", { mode: "string" }).notNull(),
+    image: text("image").notNull().default(""),
+    role: text("role").notNull().default("field_staff"), // field_staff or asset_management
+    createdAt: timestamp("created_at").notNull(),
+    updatedAt: timestamp("updated_at").notNull(),
+    // createdAt: timestamp('created_at').$defaultFn(() => /* @__PURE__ */ new Date()).notNull(),
+    // updatedAt: timestamp('updated_at').$defaultFn(() => /* @__PURE__ */ new Date()).notNull(),
   },
   (table) => [unique("user_email_unique").on(table.email)]
 );
@@ -126,30 +129,10 @@ export const asset = pgTable("asset", {
   lat: decimal("lat").notNull(),
   color: text("color").notNull(),
   createdAt: timestamp("created_at")
-    .$defaultFn(() => /* @__PURE__ */ new Date())
+    .$defaultFn(() => new Date())
     .notNull(),
   updatedAt: timestamp("updated_at")
-    .$defaultFn(() => /* @__PURE__ */ new Date())
-    .notNull(),
-});
-
-export const equipmentRequest = pgTable("equipment_request", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  requestorEmail: text("requestor_email").notNull(),
-  inventoryId: uuid("inventory_id")
-    .notNull()
-    .references(() => inventoryItem.id, { onDelete: "cascade" }),
-  inventoryItemName: text("inventory_item_name").notNull(),
-  quantity: integer("quantity").notNull(),
-  startDate: timestamp("start_date").notNull(),
-  endDate: timestamp("end_date").notNull(),
-  status: text("status").notNull().default("pending"), // pending, approved, denied
-  denialReason: text("denial_reason"),
-  createdAt: timestamp("created_at")
-    .$defaultFn(() => /* @__PURE__ */ new Date())
-    .notNull(),
-  updatedAt: timestamp("updated_at")
-    .$defaultFn(() => /* @__PURE__ */ new Date())
+    .$defaultFn(() => new Date())
     .notNull(),
 });
 
@@ -163,10 +146,10 @@ export const complaint = pgTable("complaint", {
   status: text("status").notNull().default("pending"), // pending, in_progress, resolved
   reviewed: boolean("reviewed").notNull().default(false),
   createdAt: timestamp("created_at")
-    .$defaultFn(() => /* @__PURE__ */ new Date())
+    .$defaultFn(() => new Date())
     .notNull(),
   updatedAt: timestamp("updated_at")
-    .$defaultFn(() => /* @__PURE__ */ new Date())
+    .$defaultFn(() => new Date())
     .notNull(),
   resolved: timestamp("resolved"),
 });
