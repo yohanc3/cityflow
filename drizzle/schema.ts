@@ -7,8 +7,8 @@ import {
   boolean,
   uuid,
   integer,
-  decimal,
 } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 
 export const account = pgTable(
   "account",
@@ -117,18 +117,3 @@ export const equipmentRequest = pgTable(
     }).onDelete("cascade"),
   ]
 );
-
-export const asset = pgTable("asset", {
-  id: uuid("id").primaryKey().defaultRandom().notNull(),
-  name: text("name").notNull(),
-  description: text("description"),
-  lng: decimal("lng").notNull(),
-  lat: decimal("lat").notNull(),
-  color: text("color").notNull(),
-  createdAt: timestamp("created_at")
-    .$defaultFn(() => /* @__PURE__ */ new Date())
-    .notNull(),
-  updatedAt: timestamp("updated_at")
-    .$defaultFn(() => /* @__PURE__ */ new Date())
-    .notNull(),
-});
