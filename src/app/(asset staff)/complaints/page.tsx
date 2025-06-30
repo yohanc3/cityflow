@@ -1,37 +1,43 @@
 "use client";
 
-import { useState, useEffect, useMemo } from 'react';
-import { MessageSquare, RefreshCw, ArrowLeft } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useState, useEffect, useMemo } from "react";
+import { MessageSquare, RefreshCw, ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { ComplaintsTable } from '@/src/components/complaints/complaints-table';
-import { Complaint } from '@/src/types/complaint';
-import Link from 'next/link';
-import { isDateInMonthYear } from '@/src/lib/utils';
+} from "@/components/ui/select";
+import { ComplaintsTable } from "@/src/components/complaints/complaints-table";
+import { Complaint } from "@/src/types/complaint";
+import Link from "next/link";
+import { isDateInMonthYear } from "@/src/lib/utils";
 
 export default function ComplaintsPage() {
   const [complaints, setComplaints] = useState<Complaint[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [filter, setFilter] = useState<'all' | 'reviewed' | 'to_review'>('all');
+  const [filter, setFilter] = useState<"all" | "reviewed" | "to_review">("all");
 
   async function fetchComplaints() {
     try {
       setIsLoading(true);
-      const response = await fetch('/api/complaints');
+      const response = await fetch("/api/complaints");
       if (!response.ok) {
-        throw new Error('Failed to fetch complaints');
+        throw new Error("Failed to fetch complaints");
       }
       const data = await response.json();
       setComplaints(data);
     } catch (error) {
-      console.error('Error fetching complaints:', error);
+      console.error("Error fetching complaints:", error);
     } finally {
       setIsLoading(false);
     }
@@ -47,10 +53,10 @@ export default function ComplaintsPage() {
 
   const filteredComplaints = useMemo(() => {
     switch (filter) {
-      case 'reviewed':
-        return complaints.filter(complaint => complaint.reviewed);
-      case 'to_review':
-        return complaints.filter(complaint => !complaint.reviewed);
+      case "reviewed":
+        return complaints.filter((complaint) => complaint.reviewed);
+      case "to_review":
+        return complaints.filter((complaint) => !complaint.reviewed);
       default:
         return complaints;
     }
@@ -62,10 +68,11 @@ export default function ComplaintsPage() {
   const currentYear = 2025;
 
   // Stats logic
-  const totalComplaints = complaints.filter(c => isDateInMonthYear(c.createdAt, currentMonth, currentYear)).length;
-  const toReviewCount = complaints.filter(c => c.reviewed === false).length;
-  const reviewedCount = complaints.filter(c => c.reviewed === true).length;
-
+  const totalComplaints = complaints.filter((c) =>
+    isDateInMonthYear(c.createdAt, currentMonth, currentYear)
+  ).length;
+  const toReviewCount = complaints.filter((c) => c.reviewed === false).length;
+  const reviewedCount = complaints.filter((c) => c.reviewed === true).length;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -76,7 +83,11 @@ export default function ComplaintsPage() {
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
                 <Link href="/dashboard">
-                  <Button variant="ghost" size="sm" className="flex items-center gap-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="flex items-center gap-2"
+                  >
                     <ArrowLeft className="h-4 w-4" />
                     Dashboard
                   </Button>
@@ -100,7 +111,9 @@ export default function ComplaintsPage() {
                   disabled={isLoading}
                   className="flex items-center gap-2"
                 >
-                  <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+                  <RefreshCw
+                    className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`}
+                  />
                   Refresh
                 </Button>
               </div>
@@ -110,9 +123,11 @@ export default function ComplaintsPage() {
 
         {/* Stats for this month */}
         <div className="mb-4">
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Stats for this month</h2>
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">
+            Stats for this month
+          </h2>
         </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           {/* Total Complaints this month */}
           <Card>
             <CardContent className="p-6">
@@ -178,10 +193,18 @@ export default function ComplaintsPage() {
                 All Complaints
               </CardTitle>
               <div className="flex items-center gap-2">
-                <label htmlFor="filter-select" className="text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="filter-select"
+                  className="text-sm font-medium text-gray-700"
+                >
                   Filter:
                 </label>
-                <Select value={filter} onValueChange={(value: 'all' | 'reviewed' | 'to_review') => setFilter(value)}>
+                <Select
+                  value={filter}
+                  onValueChange={(value: "all" | "reviewed" | "to_review") =>
+                    setFilter(value)
+                  }
+                >
                   <SelectTrigger className="w-[180px]" id="filter-select">
                     <SelectValue placeholder="Filter complaints" />
                   </SelectTrigger>

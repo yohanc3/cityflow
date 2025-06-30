@@ -170,7 +170,7 @@ export function EditItemDialog({
                 </FormItem>
               )}
             />
-            <DialogFooter>
+            <DialogFooter className="mt-4">
               <Button
                 type="button"
                 variant="outline"

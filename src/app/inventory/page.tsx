@@ -1,13 +1,19 @@
 "use client";
 
-import React from 'react';
-import { Package, RefreshCw, FileText, ArrowLeft } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { AddItemDialog } from '@/src/components/inventory/add-item-dialog';
-import { InventoryTable } from '@/src/components/inventory/inventory-table';
-import { InventoryItem } from '@/src/types/inventory';
-import Link from 'next/link';
+import React from "react";
+import { Package, RefreshCw, FileText, ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { AddItemDialog } from "@/src/components/inventory/add-item-dialog";
+import { InventoryTable } from "@/src/components/inventory/inventory-table";
+import { InventoryItem } from "@/src/types/inventory";
+import Link from "next/link";
 
 export default function InventoryPage() {
   const [items, setItems] = React.useState<InventoryItem[]>([]);
@@ -16,14 +22,14 @@ export default function InventoryPage() {
   async function fetchItems() {
     try {
       setIsLoading(true);
-      const response = await fetch('/api/inventory');
+      const response = await fetch("/api/inventory");
       if (!response.ok) {
-        throw new Error('Failed to fetch inventory items');
+        throw new Error("Failed to fetch inventory items");
       }
       const data = await response.json();
       setItems(data);
     } catch (error) {
-      console.error('Error fetching inventory items:', error);
+      console.error("Error fetching inventory items:", error);
     } finally {
       setIsLoading(false);
     }
@@ -37,7 +43,7 @@ export default function InventoryPage() {
     fetchItems();
   }
 
-  const lowStockCount = items.filter(item => item.quantity <= 5).length;
+  const lowStockCount = items.filter((item) => item.quantity <= 5).length;
   const totalQuantity = items.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
@@ -49,7 +55,11 @@ export default function InventoryPage() {
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
                 <Link href="/dashboard">
-                  <Button variant="ghost" size="sm" className="flex items-center gap-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="flex items-center gap-2"
+                  >
                     <ArrowLeft className="h-4 w-4" />
                     Dashboard
                   </Button>
@@ -68,10 +78,7 @@ export default function InventoryPage() {
               </div>
               <div className="flex items-center space-x-3">
                 <Link href="/requests">
-                  <Button
-                    variant="outline"
-                    className="flex items-center gap-2"
-                  >
+                  <Button variant="outline" className="flex items-center gap-2">
                     <FileText className="h-4 w-4" />
                     See Requests
                   </Button>
@@ -82,7 +89,9 @@ export default function InventoryPage() {
                   disabled={isLoading}
                   className="flex items-center gap-2"
                 >
-                  <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+                  <RefreshCw
+                    className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`}
+                  />
                   Refresh
                 </Button>
                 <AddItemDialog onItemAdded={fetchItems} />

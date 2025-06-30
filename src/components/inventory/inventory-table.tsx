@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React from "react";
 import {
   Table,
   TableBody,
@@ -8,7 +8,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
+} from "@/components/ui/table";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,14 +16,14 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardDescription } from '@/components/ui/card';
-import { MoreHorizontal, Search, Edit, Trash2 } from 'lucide-react';
-import { InventoryItem } from '@/src/types/inventory';
-import { EditItemDialog } from './edit-item-dialog';
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardDescription } from "@/components/ui/card";
+import { MoreHorizontal, Search, Edit, Trash2 } from "lucide-react";
+import { InventoryItem } from "@/src/types/inventory";
+import { EditItemDialog } from "./edit-item-dialog";
 
 interface InventoryTableProps {
   items: InventoryItem[];
@@ -31,55 +31,62 @@ interface InventoryTableProps {
   onItemDeleted: () => void;
 }
 
-export function InventoryTable({ items, onItemUpdated, onItemDeleted }: InventoryTableProps) {
-  const [searchTerm, setSearchTerm] = React.useState('');
-  const [editingItem, setEditingItem] = React.useState<InventoryItem | null>(null);
+export function InventoryTable({
+  items,
+  onItemUpdated,
+  onItemDeleted,
+}: InventoryTableProps) {
+  const [searchTerm, setSearchTerm] = React.useState("");
+  const [editingItem, setEditingItem] = React.useState<InventoryItem | null>(
+    null
+  );
 
   const filteredItems = React.useMemo(() => {
     if (!searchTerm) return items;
-    
+
     return items.filter(
       (item) =>
         item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (item.description && item.description.toLowerCase().includes(searchTerm.toLowerCase()))
+        (item.description &&
+          item.description.toLowerCase().includes(searchTerm.toLowerCase()))
     );
   }, [items, searchTerm]);
 
   async function handleDeleteItem(id: string) {
-    if (!confirm('Are you sure you want to delete this item?')) {
+    if (!confirm("Are you sure you want to delete this item?")) {
       return;
     }
 
     try {
       const response = await fetch(`/api/inventory/${id}`, {
-        method: 'DELETE',
+        method: "DELETE",
       });
 
       if (!response.ok) {
-        throw new Error('Failed to delete inventory item');
+        throw new Error("Failed to delete inventory item");
       }
 
       onItemDeleted();
     } catch (error) {
-      console.error('Error deleting inventory item:', error);
+      console.error("Error deleting inventory item:", error);
     }
   }
 
   function formatDate(date: Date | string) {
-    return new Date(date).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
+    return new Date(date).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
     });
   }
 
   function getStockBadge(quantity: number) {
     if (quantity === 0) {
       return <Badge variant="destructive">Out of Stock</Badge>;
-    } else if (quantity <= 2) {
+    } else if (quantity <= 5) {
       return <Badge variant="secondary">Low Stock</Badge>;
     } else {
-      return <Badge variant="default">In Stock</Badge>;
+      return <Badge variant="default">In Stock </Badge>;
     }
   }
 
@@ -117,7 +124,9 @@ export function InventoryTable({ items, onItemUpdated, onItemDeleted }: Inventor
               <TableRow>
                 <TableCell colSpan={7} className="text-center py-8">
                   <CardDescription>
-                    {searchTerm ? 'No items found matching your search.' : 'No inventory items found.'}
+                    {searchTerm
+                      ? "No items found matching your search."
+                      : "No inventory items found."}
                   </CardDescription>
                 </TableCell>
               </TableRow>
@@ -126,7 +135,7 @@ export function InventoryTable({ items, onItemUpdated, onItemDeleted }: Inventor
                 <TableRow key={item.id}>
                   <TableCell className="font-medium">{item.name}</TableCell>
                   <TableCell className="max-w-[200px] truncate">
-                    {item.description || '-'}
+                    {item.description || "-"}
                   </TableCell>
                   <TableCell className="text-right">{item.quantity}</TableCell>
                   <TableCell>{getStockBadge(item.quantity)}</TableCell>

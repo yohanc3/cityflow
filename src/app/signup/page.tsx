@@ -211,7 +211,14 @@ export default function SignUpPage() {
                       </FormLabel>
                       <Select
                         onValueChange={field.onChange}
-                        defaultValue={field.value}
+                        value={
+                          field?.value
+                            ? (
+                                field.value.substring(0, 1).toUpperCase() +
+                                field.value.substring(1)
+                              ).replace("_", " ")
+                            : ""
+                        }
                       >
                         <FormControl>
                           <SelectTrigger>
