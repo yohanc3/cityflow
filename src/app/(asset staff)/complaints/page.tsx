@@ -201,11 +201,9 @@ export default function ComplaintsPage() {
                 </label>
                 <Select
                   value={filter}
-                  onValueChange={(value: "all" | "reviewed" | "to_review") =>
-                    setFilter(value)
-                  }
+                  onValueChange={(value: any) => setFilter(value as any)}
                 >
-                  <SelectTrigger className="w-[180px]" id="filter-select">
+                  <SelectTrigger className="w-[180px]">
                     <SelectValue placeholder="Filter complaints" />
                   </SelectTrigger>
                   <SelectContent>

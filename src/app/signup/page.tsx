@@ -87,6 +87,7 @@ export default function SignUpPage() {
         email: data.email,
         password: data.password,
         callbackURL: "/dashboard",
+        // @ts-ignore
         role: data.role,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),

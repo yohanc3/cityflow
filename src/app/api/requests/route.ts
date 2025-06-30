@@ -1,23 +1,23 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/db';
-import { equipmentRequest, inventoryItem } from '@/src/db/schema';
-import { desc, eq } from 'drizzle-orm';
-import { CreateEquipmentRequestRequest } from '@/src/types/request';
-import { v4 as uuidv4 } from 'uuid';
-import { auth } from "@/src/lib/auth"
+import { NextRequest, NextResponse } from "next/server";
+import { db } from "@/db";
+import { equipmentRequest, inventoryItem } from "@/src/db/schema";
+import { desc, eq } from "drizzle-orm";
+import { CreateEquipmentRequestRequest } from "@/src/types/request";
+import { v4 as uuidv4 } from "uuid";
+import { auth } from "@/src/lib/auth";
 import { headers } from "next/headers";
 
 export async function GET(request: NextRequest) {
   try {
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session?.user) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { searchParams } = new URL(request.url);
-    const status = searchParams.get('status');
+    const status = searchParams.get("status");
 
-    let query = db
+    let query: any = db
       .select({
         id: equipmentRequest.id,
         requestorEmail: equipmentRequest.requestorEmail,
@@ -41,9 +41,9 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(requests);
   } catch (error) {
-    console.error('Error fetching equipment requests:', error);
+    console.error("Error fetching equipment requests:", error);
     return NextResponse.json(
-      { error: 'Failed to fetch equipment requests' },
+      { error: "Failed to fetch equipment requests" },
       { status: 500 }
     );
   }
@@ -52,17 +52,31 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session?.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   try {
     const body: CreateEquipmentRequestRequest = await request.json();
-    
-    const { requestorEmail, inventoryId, inventoryItemName, quantity, startDate, endDate } = body;
 
-    if (!requestorEmail || !inventoryId || !inventoryItemName || !quantity || !startDate || !endDate) {
+    const {
+      requestorEmail,
+      inventoryId,
+      inventoryItemName,
+      quantity,
+      startDate,
+      endDate,
+    } = body;
+
+    if (
+      !requestorEmail ||
+      !inventoryId ||
+      !inventoryItemName ||
+      !quantity ||
+      !startDate ||
+      !endDate
+    ) {
       return NextResponse.json(
-        { error: 'All fields are required' },
+        { error: "All fields are required" },
         { status: 400 }
       );
     }
@@ -76,7 +90,7 @@ export async function POST(request: NextRequest) {
 
     if (item.length === 0) {
       return NextResponse.json(
-        { error: 'Inventory item not found' },
+        { error: "Inventory item not found" },
         { status: 404 }
       );
     }
@@ -92,7 +106,7 @@ export async function POST(request: NextRequest) {
         quantity,
         startDate: new Date(startDate),
         endDate: new Date(endDate),
-        status: 'pending',
+        status: "pending",
         createdAt: now,
         updatedAt: now,
       })
@@ -100,9 +114,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(newRequest[0], { status: 201 });
   } catch (error) {
-    console.error('Error creating equipment request:', error);
+    console.error("Error creating equipment request:", error);
     return NextResponse.json(
-      { error: 'Failed to create equipment request' },
+      { error: "Failed to create equipment request" },
       { status: 500 }
     );
   }

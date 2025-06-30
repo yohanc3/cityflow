@@ -52,8 +52,8 @@ export default function DashboardPage() {
     return null;
   }
 
-  const isAssetManagement = session.user.role === "asset_management";
-  const isFieldStaff = session.user.role === "field_staff";
+  const isAssetManagement = (session.user as any).role === "asset_management";
+  const isFieldStaff = (session.user as any).role === "field_staff";
 
   async function signOutUser() {
     await signOut({
@@ -211,7 +211,7 @@ export default function DashboardPage() {
                 <div className="flex items-center space-x-2">
                   <Users className="h-5 w-5 text-gray-400" />
                   <span className="text-sm text-gray-500 capitalize">
-                    {session.user.role.replace("_", " ")}
+                    {(session.user as any).role.replace("_", " ")}
                   </span>
                 </div>
               </div>

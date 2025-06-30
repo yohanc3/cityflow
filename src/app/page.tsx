@@ -31,6 +31,11 @@ function App() {
               <span className="text-xl font-bold text-gray-900">CityFlow</span>
             </div>
             <div className="hidden md:flex items-center space-x-8">
+              <a href="/submit-complaint">
+                <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                  Submit Complaint
+                </button>
+              </a>
               <a
                 href="#features"
                 className="text-gray-700 hover:text-blue-600 transition-colors"
@@ -75,9 +80,9 @@ function App() {
               </span>
             </h1>
             <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed">
-              Track assets, manage repairs, log complaints, and stay organized —
-              all in one intuitive platform designed specifically for public
-              works departments.
+              Track assets, submit complaints, manage repairs, and stay
+              organized — all in one intuitive platform designed specifically
+              for public works departments.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/signup">
