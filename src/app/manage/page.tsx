@@ -3,8 +3,10 @@
 import React, { useState, useEffect } from "react";
 import AssetsSidebar from "@/src/lib/components/assets-sidebar";
 import { Map as MapLibreMap } from "maplibre-gl";
-import { Settings, MapPin } from "lucide-react";
+import { Settings, MapPin, Home } from "lucide-react";
+import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
+import { Complaint } from "@/src/types/complaint";
 
 const ManageAssetsMap = dynamic(
   () => import("@/src/lib/components/manage-assets-map"),
@@ -20,18 +22,14 @@ interface Asset {
   color: string;
 }
 
-interface Complaint {
+interface Log {
   id: string;
-  name: string | null;
-  email: string | null;
+  title: string;
+  type: string;
   description: string;
-  location: string;
-  imageUrl: string | null;
-  status: 'pending' | 'in_progress' | 'resolved';
-  createdAt: Date;
-  updatedAt: Date;
-  reviewed: boolean;
-  resolved?: Date | string | null;
+  technician: string;
+  updatedAt: string;
+  assetId: string;
 }
 
 export interface MapInfo {
@@ -42,9 +40,11 @@ export interface MapInfo {
 type TabType = 'assets' | 'complaints';
 
 export default function ManagePage() {
+  const router = useRouter();
   const [mapInfo, setMapInfo] = useState<MapInfo | null>(null);
   const [map, setMap] = useState<MapLibreMap | null>(null);
   const [assets, setAssets] = useState<Asset[]>([]);
+  const [logs, setLogs] = useState<Log[]>([]);
   const [complaints, setComplaints] = useState<Complaint[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isAddingAsset, setIsAddingAsset] = useState(false);
@@ -73,6 +73,31 @@ export default function ManagePage() {
       console.error("Error fetching assets:", error);
     } finally {
       setIsLoading(false);
+    }
+  }
+
+  async function fetchLogs() {
+    try {
+      const response = await fetch("/api/logs");
+      if (!response.ok) {
+        throw new Error("Failed to fetch logs");
+      }
+      const data = await response.json();
+
+      // Format logs for display - mapping database structure to UI
+      const formattedLogs: Log[] = data.map((log: any) => ({
+        id: log.id,
+        title: log.title,
+        type: log.jobType,
+        description: log.description,
+        technician: log.technician,
+        updatedAt: log.updatedAt || log.createdAt,
+        assetId: log.assetId,
+      }));
+
+      setLogs(formattedLogs);
+    } catch (error) {
+      console.error("Error fetching logs:", error);
     }
   }
 
@@ -126,6 +151,7 @@ export default function ManagePage() {
 
   useEffect(() => {
     fetchAssets();
+    fetchLogs();
     fetchComplaints();
   }, []);
 
@@ -133,10 +159,18 @@ export default function ManagePage() {
     setAssets(newAssets);
   }
 
+  function handleLogsChange(newLogs: Log[]) {
+    setLogs(newLogs);
+  }
+
   function handleToggleAddingAsset() {
     setIsAddingAsset(!isAddingAsset);
   }
 
+  function handleGoHome() {
+    router.push("/dashboard");
+  }
+  
   function handleTabChange(tab: TabType) {
     setActiveTab(tab);
     // Exit adding mode when switching tabs
@@ -174,7 +208,11 @@ export default function ManagePage() {
       <div className="bg-white border-b border-gray-100 shadow-sm flex-shrink-0">
         <div className="px-8 py-6">
           <div className="flex items-center justify-between">
+
             <div className="flex items-center space-x-4">
+            <div className="p-2.5 bg-blue-100 rounded-xl cursor-pointer hover:bg-blue-200" onClick={handleGoHome}>
+                <Home className="h-6 w-6 text-blue-600" />
+              </div>
               <div className="p-2.5 bg-blue-100 rounded-xl">
                 <Settings className="h-6 w-6 text-blue-600" />
               </div>
@@ -204,8 +242,8 @@ export default function ManagePage() {
               </div>
             </div>
 
-            {/* Counter */}
-            <div className="flex items-center space-x-3">
+            {/* Asset counter and Go Home button */}
+            <div className="flex items-center space-x-4">
               <div className="text-right">
                 <p className="text-sm font-medium text-gray-900">
                   {activeTab === 'assets' 
@@ -225,6 +263,14 @@ export default function ManagePage() {
       {/* Main Content */}
       <div className="flex w-full flex-1 h-4/5">
         <div className="w-1/4 h-full">
+          {/* <AssetsSidebar
+            assets={assets}
+            onAssetsChange={handleAssetsChange}
+            logs={logs}
+            onLogsChange={handleLogsChange}
+            isAddingAsset={isAddingAsset}
+            onToggleAddingAsset={handleToggleAddingAsset}
+          /> */}
           <div className="bg-white border-r border-gray-200 flex flex-col h-full max-h-full overflow-hidden space-y-3">
             {/* Tab Selector */}
             <div className="px-3 py-3 flex-shrink-0 border-b border-gray-200">
@@ -254,12 +300,16 @@ export default function ManagePage() {
 
             {/* Content based on active tab */}
             {activeTab === 'assets' ? (
-              <AssetsSidebar
-                assets={assets}
-                onAssetsChange={handleAssetsChange}
-                isAddingAsset={isAddingAsset}
-                onToggleAddingAsset={handleToggleAddingAsset}
-              />
+                <div className="flex flex-col h-full pb-4 overflow-hidden">
+                    <AssetsSidebar
+                      assets={assets}
+                      onAssetsChange={handleAssetsChange}
+                      isAddingAsset={isAddingAsset}
+                      onToggleAddingAsset={handleToggleAddingAsset}
+                      logs={logs}
+                      onLogsChange={handleLogsChange}
+                    />
+                </div>
             ) : (
               <div className="flex flex-col h-full overflow-hidden">
                 {/* Complaints List */}
